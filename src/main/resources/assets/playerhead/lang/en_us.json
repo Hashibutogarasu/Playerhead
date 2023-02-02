@@ -1,0 +1,10 @@
+{
+  "playerhead.screen.playergivescreen": "Give Player Head",
+  "playerhead.widget.givebutton" : "Copy give command",
+  "playerhead.tutorial.howtouse.title": "How to use",
+  "playerhead.tutorial.howtouse.description": "Enter key to change.",
+  "playerhead.message.copied.title": "Copied",
+  "playerhead.message.copied.description": "Copied to clipboard.",
+  "category.playerhead.keybinds": "Playerhead",
+  "key.playerhead.show.playergivescreen": "Show give screen"
+}

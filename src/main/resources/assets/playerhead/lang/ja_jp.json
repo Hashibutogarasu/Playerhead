@@ -1,0 +1,10 @@
+{
+  "playerhead.screen.playergivescreen": "Give Player Head",
+  "playerhead.widget.givebutton" : "コマンドをコピー",
+  "playerhead.tutorial.howtouse.title": "",
+  "playerhead.tutorial.howtouse.description": "エンターキーで変更",
+  "playerhead.message.copied.title": "コピーしました",
+  "playerhead.message.copied.description": "クリップボードにコピーしました",
+  "category.playerhead.keybinds": "Playerhead",
+  "key.playerhead.show.playergivescreen": "GUIを表示"
+}

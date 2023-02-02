@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "playerhead",
+  "version": "${version}",
+  "name": "Playerhead",
+  "description": "This mod can generate player skull command in the gui",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "git.hashibutogarasu.playerhead.client.PlayerheadClient"
+    ],
+    "main": [
+
+    ]
+  },
+  "mixins": [
+    "playerhead.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.13",
+    "fabric": "*",
+    "minecraft": "1.19.3"
+  }
+}
