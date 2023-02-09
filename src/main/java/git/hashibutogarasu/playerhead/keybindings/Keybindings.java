@@ -6,13 +6,21 @@ import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 public class Keybindings {
-    public KeyBinding playergivescreen;
+    public static KeyBinding playergivescreen;
+    public static KeyBinding addtofavorite;
 
     public Keybindings(){
         playergivescreen = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.playerhead.show.playergivescreen",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_COMMA,
+                "category.playerhead.keybinds"
+        ));
+
+        addtofavorite = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.playerhead.show.addtofavorite",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_I,
                 "category.playerhead.keybinds"
         ));
     }

@@ -1,11 +1,13 @@
 package git.hashibutogarasu.playerhead.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
+import git.hashibutogarasu.playerhead.ListType;
+import git.hashibutogarasu.playerhead.client.PlayerheadClient;
+import git.hashibutogarasu.playerhead.keybindings.Keybindings;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
@@ -16,8 +18,8 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,11 +34,18 @@ public class PlayerListWidget
     public PlayerListWidget(PlayerGiveScreen screen, MinecraftClient client, int width, int height, int top, int bottom, int entryHeight) {
         super(client, width, height, top, bottom, entryHeight);
         this.screen = screen;
+
+        if(PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS){
+            this.setPlayers(MinecraftClient.getInstance().getServer().getPlayerNames());
+        }
+        else if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
+            this.setPlayers(PlayerheadClient.LoadConfig().favorited_players);
+        }
     }
 
-    private void updateEntries() {
+    public void updateEntries() {
         this.clearEntries();
-        this.players.forEach(player -> this.addEntry(player));
+        this.players.forEach(this::addEntry);
         this.addEntry(this.scanningEntry);
     }
 
@@ -47,7 +56,7 @@ public class PlayerListWidget
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        Entry entry = (Entry)this.getSelectedOrNull();
+        Entry entry = this.getSelectedOrNull();
         return entry != null && entry.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -61,6 +70,21 @@ public class PlayerListWidget
         for (int i = 0; i < Arrays.stream(players).count(); ++i) {
             this.players.add(new PlayerEntry(this.screen, players[i]));
         }
+        this.updateEntries();
+    }
+
+    public void setPlayers(List<String> players) {
+        this.players.clear();
+        if(players != null){
+            for (int i = 0; i < (long) players.size(); ++i) {
+                this.players.add(new PlayerEntry(this.screen, players.get(i)));
+            }
+            this.updateEntries();
+        }
+    }
+
+    public void clearPlayers(){
+        this.players.clear();
         this.updateEntries();
     }
 
@@ -107,6 +131,7 @@ public class PlayerListWidget
         private final ItemRenderer itemRenderer;
 
         protected PlayerEntry(PlayerGiveScreen screen, String playername) {
+            this.itemRenderer = MinecraftClient.getInstance().getItemRenderer();
             this.screen = screen;
             this.playername = playername;
             this.client = MinecraftClient.getInstance();
@@ -115,12 +140,18 @@ public class PlayerListWidget
             NbtCompound nbtCompound = new NbtCompound();
             nbtCompound.putString("SkullOwner",playername);
             playerskull.setNbt(nbtCompound);
-
-            this.itemRenderer = MinecraftClient.getInstance().getItemRenderer();
         }
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            if(hovered){
+                if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
+                    this.screen.renderTooltip(matrices,Text.translatable("playerhead.tooltip.removefavorite", "delete"),mouseX,mouseY);
+                }
+                else {
+                    this.screen.renderTooltip(matrices,Text.translatable("playerhead.tooltip.addfavorite", KeyBindingHelper.getBoundKeyOf(Keybindings.addtofavorite).getLocalizedText().getString()),mouseX,mouseY);
+                }
+            }
             this.client.textRenderer.draw(matrices, this.playername, (float)(x + 35), (float)(y + 2), 0xFFFFFF);
             this.itemRenderer.renderGuiItemIcon(playerskull, (x + 275), (y - 1));
         }
