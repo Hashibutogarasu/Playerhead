@@ -7,7 +7,6 @@
   "playerhead.message.copied.title": "コピーしました",
   "playerhead.message.copied.description": "クリップボードにコピーしました",
   "category.playerhead.keybinds": "Playerhead",
-  "key.playerhead.show.openheadsselection": "プレイヤーの頭を選択",
   "key.playerhead.show.addtofavorite": "お気に入りに追加",
   "playerhead.tooltip.addfavorite": "対象をクリックして%dキーでお気に入りに追加",
   "playerhead.tooltip.removefavorite": "対象をクリックして%dキーでお気に入りから削除",
