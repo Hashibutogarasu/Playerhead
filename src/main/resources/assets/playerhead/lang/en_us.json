@@ -7,7 +7,6 @@
   "playerhead.message.copied.title": "Copied",
   "playerhead.message.copied.description": "Copied to clipboard.",
   "category.playerhead.keybinds": "Playerhead",
-  "key.playerhead.show.openheadsselection": "Open Heads Selection.",
   "key.playerhead.show.addtofavorite": "Add to favorite",
   "playerhead.tooltip.addfavorite": "Click and %d key to add to favorite.",
   "playerhead.tooltip.removefavorite": "Click and %d key to remove this head from favorite.",
