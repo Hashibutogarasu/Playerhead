@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import git.hashibutogarasu.playerhead.configs.Config;
 import git.hashibutogarasu.playerhead.keybindings.Keybindings;
-import git.hashibutogarasu.playerhead.screen.HeadsSelectionScreen;
 import git.hashibutogarasu.playerhead.screen.PlayerGiveScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;

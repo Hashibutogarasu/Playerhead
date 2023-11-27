@@ -11,7 +11,6 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -235,11 +234,10 @@ public class HeadsSelectionScreen extends Screen {
         }
 
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            MinecraftClient minecraftClient = MinecraftClient.getInstance();
-            this.drawBackground(matrices, minecraftClient.getTextureManager());
+            this.drawBackground(matrices);
             this.headselection.renderIcon(HeadsSelectionScreen.this.itemRenderer, this.getX() + 5, this.getY() + 5);
             if (this.selected) {
-                this.drawSelectionBox(matrices, minecraftClient.getTextureManager());
+                this.drawSelectionBox(matrices);
             }
         }
 
@@ -255,7 +253,7 @@ public class HeadsSelectionScreen extends Screen {
             this.selected = selected;
         }
 
-        private void drawBackground(MatrixStack matrices, TextureManager textureManager) {
+        private void drawBackground(MatrixStack matrices) {
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, HeadsSelectionScreen.TEXTURE);
             matrices.push();
@@ -264,7 +262,7 @@ public class HeadsSelectionScreen extends Screen {
             matrices.pop();
         }
 
-        private void drawSelectionBox(MatrixStack matrices, TextureManager textureManager) {
+        private void drawSelectionBox(MatrixStack matrices) {
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, HeadsSelectionScreen.TEXTURE);
             matrices.push();
