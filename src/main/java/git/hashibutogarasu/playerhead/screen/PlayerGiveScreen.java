@@ -16,6 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
@@ -35,14 +36,18 @@ public class PlayerGiveScreen extends Screen {
     private Text changebutton_text = Text.translatable("playerhead.widget.changetypebutton.server_players");
 
     private TexturedButtonWidget delete_all_button;
+    private MinecraftServer server = null;
 
     public PlayerGiveScreen(String before_search_text){
         this(Text.translatable("playerhead.screen.playergivescreen"));
+        server = MinecraftClient.getInstance().getServer();
         PlayerheadClient.config = PlayerheadClient.LoadConfig();
         this.before_search_text = before_search_text;
         updateSkull();
 
-        if(PlayerheadClient.config.last_listtype == null) PlayerheadClient.config.last_listtype = ListType.SERVER_PLAYERS;
+        if(PlayerheadClient.config != null){
+            if(PlayerheadClient.config.last_listtype == null) PlayerheadClient.config.last_listtype = ListType.SERVER_PLAYERS;
+        }
         PlayerheadClient.SaveConfig(PlayerheadClient.config,StandardOpenOption.TRUNCATE_EXISTING);
     }
 
@@ -72,18 +77,24 @@ public class PlayerGiveScreen extends Screen {
             MinecraftClient.getInstance().setScreen(null);
         }).position((this.width / 2) - 150, searchBox.getY() + 25).size(250,20).build();
 
-        if(PlayerheadClient.config.last_listtype == ListType.FAVORITED) changebutton_text = Text.translatable("playerhead.widget.changetypebutton.server_players");
-        else if(PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS) changebutton_text = Text.translatable("playerhead.widget.changetypebutton.favorited");
+        if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.FAVORITED)
+            changebutton_text = Text.translatable("playerhead.widget.changetypebutton.server_players");
+
+
 
         this.changetypebutton = ButtonWidget.builder(changebutton_text,(button)->{
-            if(PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS){
-                PlayerheadClient.config.last_listtype = ListType.FAVORITED;
-                button.setMessage(Text.translatable("playerhead.widget.changetypebutton.server_players"));
-                this.playerListWidget.setPlayers(PlayerheadClient.config.favorited_players);
-            } else if (PlayerheadClient.config.last_listtype == ListType.FAVORITED) {
-                PlayerheadClient.config.last_listtype = ListType.SERVER_PLAYERS;
-                button.setMessage(Text.translatable("playerhead.widget.changetypebutton.favorited"));
-                this.playerListWidget.setPlayers(MinecraftClient.getInstance().getServer().getPlayerNames());
+            if(PlayerheadClient.config != null){
+                if(PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS){
+                    PlayerheadClient.config.last_listtype = ListType.FAVORITED;
+                    button.setMessage(Text.translatable("playerhead.widget.changetypebutton.server_players"));
+                    this.playerListWidget.setPlayers(PlayerheadClient.config.favorited_players);
+                } else if (PlayerheadClient.config.last_listtype == ListType.FAVORITED) {
+                    PlayerheadClient.config.last_listtype = ListType.SERVER_PLAYERS;
+                    button.setMessage(Text.translatable("playerhead.widget.changetypebutton.favorited"));
+                    if(server != null){
+                        this.playerListWidget.setPlayers(server.getPlayerNames());
+                    }
+                }
             }
         }).position(this.givebutton.getWidth() + this.givebutton.getX() + 5, this.givebutton.getY()).size(80,20).build();
 
@@ -103,11 +114,13 @@ public class PlayerGiveScreen extends Screen {
         this.addSelectableChild(givebutton);
         this.addSelectableChild(playerListWidget);
 
-        if(!PlayerheadClient.config.tutorial_flag){
-            SystemToast.show(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.TUTORIAL_HINT, Text.translatable("playerhead.tutorial.howtouse.description"), null);
-            PlayerheadClient.config.tutorial_flag = true;
+        if(PlayerheadClient.config != null){
+            if(!PlayerheadClient.config.tutorial_flag){
+                SystemToast.show(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.TUTORIAL_HINT, Text.translatable("playerhead.tutorial.howtouse.description"), null);
+                PlayerheadClient.config.tutorial_flag = true;
 
-            PlayerheadClient.SaveConfig(PlayerheadClient.config, StandardOpenOption.TRUNCATE_EXISTING);
+                PlayerheadClient.SaveConfig(PlayerheadClient.config, StandardOpenOption.TRUNCATE_EXISTING);
+            }
         }
     }
 
@@ -126,9 +139,9 @@ public class PlayerGiveScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if(keyCode == GLFW.GLFW_KEY_ENTER && this.searchBox.isActive() && !this.searchBox.getText().equals("")){
+        if(keyCode == GLFW.GLFW_KEY_ENTER && this.searchBox.isActive() && !this.searchBox.getText().isEmpty()){
             updateSkull();
-            if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
+            if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.FAVORITED) {
                 this.playerListWidget.setPlayers(PlayerheadClient.config.favorited_players);
                 this.playerListWidget.updateEntries();
             }
@@ -138,14 +151,8 @@ public class PlayerGiveScreen extends Screen {
             if(selected != null){
                 String playername = ((PlayerListWidget.PlayerEntry) selected).playername;
                 if(playername != null) {
-                    if (PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS) {
+                    if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS) {
                         PlayerheadClient.config.favorited_players.add(playername);
-                    } else if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
-                        PlayerheadClient.config.favorited_players.remove(playername);
-
-                        this.playerListWidget.setPlayers(PlayerheadClient.config.favorited_players);
-                        this.playerListWidget.updateEntries();
-
                     }
 
                     PlayerheadClient.SaveConfig(PlayerheadClient.config,StandardOpenOption.TRUNCATE_EXISTING);
@@ -153,7 +160,9 @@ public class PlayerGiveScreen extends Screen {
             }
 
             if(!this.searchBox.isActive()){
-                PlayerheadClient.config.favorited_players.add(this.searchBox.getText());
+                if (PlayerheadClient.config != null) {
+                    PlayerheadClient.config.favorited_players.add(this.searchBox.getText());
+                }
                 PlayerheadClient.config.favorited_players = new ArrayList<>(new HashSet<>(PlayerheadClient.config.favorited_players));
 
                 if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
@@ -164,7 +173,9 @@ public class PlayerGiveScreen extends Screen {
                 PlayerheadClient.SaveConfig(PlayerheadClient.config,StandardOpenOption.TRUNCATE_EXISTING);
             }
         } else if (keyCode == GLFW.GLFW_KEY_DELETE) {
-            PlayerheadClient.config.favorited_players.remove(this.searchBox.getText());
+            if (PlayerheadClient.config != null) {
+                PlayerheadClient.config.favorited_players.remove(this.searchBox.getText());
+            }
             this.playerListWidget.setPlayers(PlayerheadClient.config.favorited_players);
             PlayerheadClient.config.favorited_players = new ArrayList<>(new HashSet<>(PlayerheadClient.config.favorited_players));
             this.playerListWidget.updateEntries();
@@ -183,14 +194,10 @@ public class PlayerGiveScreen extends Screen {
         this.changetypebutton.render(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
 
-        if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
+        if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.FAVORITED) {
             this.delete_all_button.active = true;
             this.delete_all_button.visible = true;
             this.delete_all_button.render(matrices, mouseX, mouseY, delta);
-        }
-        else{
-            this.delete_all_button.active = false;
-            this.delete_all_button.visible = false;
         }
 
         if(!this.searchBox.getText().isEmpty()) {
@@ -215,13 +222,9 @@ public class PlayerGiveScreen extends Screen {
     }
 
     private void setVisible(){
-        if(PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS){
+        if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS) {
             this.delete_all_button.visible = false;
             this.delete_all_button.active = false;
-        }
-        else if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
-            this.delete_all_button.visible = true;
-            this.delete_all_button.active = true;
         }
     }
 }

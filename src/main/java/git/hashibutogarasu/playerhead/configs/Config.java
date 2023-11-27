@@ -10,7 +10,7 @@ import java.util.List;
 public class Config {
     @SerializedName("favorited_players")
     @Expose
-    public List<String> favorited_players = null;
+    public List<String> favorited_players = new ArrayList<>();
 
     @SerializedName("tutorial_flag")
     @Expose

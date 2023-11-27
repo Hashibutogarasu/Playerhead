@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -35,11 +36,16 @@ public class PlayerListWidget
         super(client, width, height, top, bottom, entryHeight);
         this.screen = screen;
 
-        if(PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS){
-            this.setPlayers(MinecraftClient.getInstance().getServer().getPlayerNames());
-        }
-        else if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
-            this.setPlayers(PlayerheadClient.LoadConfig().favorited_players);
+        if(PlayerheadClient.config != null){
+            if(PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS){
+                MinecraftServer server = MinecraftClient.getInstance().getServer();
+                if(server != null){
+                    this.setPlayers(server.getPlayerNames());
+                }
+            }
+            else if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
+                this.setPlayers(PlayerheadClient.LoadConfig().favorited_players);
+            }
         }
     }
 
@@ -145,11 +151,8 @@ public class PlayerListWidget
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             if(hovered){
-                if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
-                    this.screen.renderTooltip(matrices,Text.translatable("playerhead.tooltip.removefavorite", "delete"),mouseX,mouseY);
-                }
-                else {
-                    this.screen.renderTooltip(matrices,Text.translatable("playerhead.tooltip.addfavorite", KeyBindingHelper.getBoundKeyOf(Keybindings.addtofavorite).getLocalizedText().getString()),mouseX,mouseY);
+                if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.FAVORITED) {
+                    this.screen.renderTooltip(matrices, Text.translatable("playerhead.tooltip.removefavorite", "delete"), mouseX, mouseY);
                 }
             }
             this.client.textRenderer.draw(matrices, this.playername, (float)(x + 35), (float)(y + 2), 0xFFFFFF);

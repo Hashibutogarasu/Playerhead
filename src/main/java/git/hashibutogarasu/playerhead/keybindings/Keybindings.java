@@ -10,6 +10,10 @@ public class Keybindings {
     public static KeyBinding addtofavorite;
 
     public Keybindings(){
+
+    }
+
+    public static void register(){
         playergivescreen = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.playerhead.show.playergivescreen",
                 InputUtil.Type.KEYSYM,

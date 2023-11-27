@@ -9,6 +9,7 @@ import git.hashibutogarasu.playerhead.screen.PlayerGiveScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,8 @@ import java.util.HashSet;
 
 public class PlayerheadClient implements ClientModInitializer {
     public static Logger clientlogger = LoggerFactory.getLogger("playerheadclient");
-    public static Config config = new Config();
+    @Nullable
+    public static Config config;
     private static final File config_directory = new File("config");
 
     private static final Path config_file_path = Path.of("config/playerhead.json");
@@ -74,7 +76,7 @@ public class PlayerheadClient implements ClientModInitializer {
 
         }
 
-        if(json.isEmpty()){
+        if (json != null && json.isEmpty()) {
             try {
                 writedummy();
             } catch (IOException ignored) {
@@ -94,9 +96,9 @@ public class PlayerheadClient implements ClientModInitializer {
     }
 
     private void RegisterKeyBinds(){
-        Keybindings keybindings = new Keybindings();
+        Keybindings.register();
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (keybindings.playergivescreen.wasPressed()) {
+            while (Keybindings.playergivescreen.wasPressed()) {
                 MinecraftClient.getInstance().setScreen(new PlayerGiveScreen(MinecraftClient.getInstance().getSession().getProfile().getName()));
             }
         });
@@ -109,6 +111,8 @@ public class PlayerheadClient implements ClientModInitializer {
 
         }
         PlayerheadClient.config = LoadConfig();
-        PlayerheadClient.SaveConfig(PlayerheadClient.config,StandardOpenOption.TRUNCATE_EXISTING);
+        if(config == null){
+            PlayerheadClient.SaveConfig(new Config(),StandardOpenOption.TRUNCATE_EXISTING);
+        }
     }
 }
