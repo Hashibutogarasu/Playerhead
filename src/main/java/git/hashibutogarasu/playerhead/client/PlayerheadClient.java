@@ -2,7 +2,6 @@ package git.hashibutogarasu.playerhead.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import git.hashibutogarasu.playerhead.ListType;
 import git.hashibutogarasu.playerhead.configs.Config;
 import git.hashibutogarasu.playerhead.keybindings.Keybindings;
 import git.hashibutogarasu.playerhead.screen.PlayerGiveScreen;

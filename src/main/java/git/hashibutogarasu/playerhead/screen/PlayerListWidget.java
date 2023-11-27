@@ -3,10 +3,8 @@ package git.hashibutogarasu.playerhead.screen;
 import com.google.common.collect.Lists;
 import git.hashibutogarasu.playerhead.ListType;
 import git.hashibutogarasu.playerhead.client.PlayerheadClient;
-import git.hashibutogarasu.playerhead.keybindings.Keybindings;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -20,7 +18,6 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.Arrays;
 import java.util.List;
