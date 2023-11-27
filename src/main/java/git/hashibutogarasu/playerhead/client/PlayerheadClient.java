@@ -4,10 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import git.hashibutogarasu.playerhead.configs.Config;
 import git.hashibutogarasu.playerhead.keybindings.Keybindings;
+import git.hashibutogarasu.playerhead.screen.HeadsSelectionScreen;
 import git.hashibutogarasu.playerhead.screen.PlayerGiveScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,8 @@ public class PlayerheadClient implements ClientModInitializer {
 
     private static final Path config_file_path = Path.of("config/playerhead.json");
     private static final File config_file = new File("config/playerhead.json");
+    @Nullable
+    public static MinecraftServer server;
 
     @Override
     public void onInitializeClient() {
@@ -98,7 +102,7 @@ public class PlayerheadClient implements ClientModInitializer {
         Keybindings.register();
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (Keybindings.playergivescreen.wasPressed()) {
-                MinecraftClient.getInstance().setScreen(new PlayerGiveScreen(MinecraftClient.getInstance().getSession().getProfile().getName()));
+                client.setScreen(new PlayerGiveScreen(MinecraftClient.getInstance().getSession().getProfile().getName()));
             }
         });
     }

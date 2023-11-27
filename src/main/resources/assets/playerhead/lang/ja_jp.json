@@ -7,6 +7,7 @@
   "playerhead.message.copied.title": "コピーしました",
   "playerhead.message.copied.description": "クリップボードにコピーしました",
   "category.playerhead.keybinds": "Playerhead",
+  "key.playerhead.show.openheadsselection": "プレイヤーの頭を選択",
   "key.playerhead.show.addtofavorite": "お気に入りに追加",
   "playerhead.tooltip.addfavorite": "対象をクリックして%dキーでお気に入りに追加",
   "playerhead.tooltip.removefavorite": "対象をクリックして%dキーでお気に入りから削除",
@@ -17,6 +18,7 @@
   "playerhead.favorite_all_button.pressed": "サーバー内の全てのプレイヤーを追加しました",
   "playerhead.tooltip.widget.favorite_button": "お気に入りに追加",
   "playerhead.widget.delete_all_button.delete": "削除しました",
-  "playerhead.widget.delete_all_button.tooltip": "お気に入りからすべて削除"
-
+  "playerhead.widget.delete_all_button.tooltip": "お気に入りからすべて削除",
+  "debug.gamemodes.press_f6": "[ F6 ]",
+  "debug.playerheads.error": "権限がないため、頭生成機を開くことができません。"
 }

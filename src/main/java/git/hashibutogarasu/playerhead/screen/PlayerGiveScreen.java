@@ -80,8 +80,6 @@ public class PlayerGiveScreen extends Screen {
         if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.FAVORITED)
             changebutton_text = Text.translatable("playerhead.widget.changetypebutton.server_players");
 
-
-
         this.changetypebutton = ButtonWidget.builder(changebutton_text,(button)->{
             if(PlayerheadClient.config != null){
                 if(PlayerheadClient.config.last_listtype == ListType.SERVER_PLAYERS){

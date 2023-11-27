@@ -7,6 +7,7 @@
   "playerhead.message.copied.title": "Copied",
   "playerhead.message.copied.description": "Copied to clipboard.",
   "category.playerhead.keybinds": "Playerhead",
+  "key.playerhead.show.openheadsselection": "Open Heads Selection.",
   "key.playerhead.show.addtofavorite": "Add to favorite",
   "playerhead.tooltip.addfavorite": "Click and %d key to add to favorite.",
   "playerhead.tooltip.removefavorite": "Click and %d key to remove this head from favorite.",
@@ -17,5 +18,7 @@
   "playerhead.favorite_all_button.pressed": "Added server players.",
   "playerhead.tooltip.widget.favorite_button": "Add to favorite.",
   "playerhead.widget.delete_all_button.delete": "Deleted.",
-  "playerhead.widget.delete_all_button.tooltip": "Delete all from favorite."
+  "playerhead.widget.delete_all_button.tooltip": "Delete all from favorite.",
+  "debug.gamemodes.press_f6": "[ F6 ]",
+  "debug.playerheads.error": "Unable to open player head giver; no permission"
 }
