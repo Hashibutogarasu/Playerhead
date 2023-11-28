@@ -186,7 +186,7 @@ public class PlayerGiveScreen extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackgroundTexture(0);
+        renderBackgroundTexture(matrices);
         this.playerListWidget.render(matrices, mouseX, mouseY, delta);
         this.givebutton.render(matrices, mouseX, mouseY, delta);
         this.changetypebutton.render(matrices, mouseX, mouseY, delta);
@@ -199,10 +199,10 @@ public class PlayerGiveScreen extends Screen {
         }
 
         if(!this.searchBox.getText().isEmpty()) {
-            this.itemRenderer.renderGuiItemIcon(playerskull,this.searchBox.getX() + this.searchBox.getWidth() + 10, this.searchBox.getY());
+            this.itemRenderer.renderGuiItemIcon(matrices, playerskull,this.searchBox.getX() + this.searchBox.getWidth() + 10, this.searchBox.getY());
         }
 
-        drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
     }
 
     @Override

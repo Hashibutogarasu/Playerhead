@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -63,11 +62,6 @@ public class PlayerListWidget
         return entry != null && entry.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    @Override
-    protected void moveSelection(EntryListWidget.MoveDirection direction) {
-        this.moveSelectionIf(direction, entry -> !(entry instanceof ScanningEntry));
-    }
-
     public void setPlayers(String[] players) {
         this.players.clear();
         for (int i = 0; i < Arrays.stream(players).count(); ++i) {
@@ -102,7 +96,7 @@ public class PlayerListWidget
     }
 
     @Override
-    protected boolean isFocused() {
+    public boolean isFocused() {
         return this.screen.getFocused() == this;
     }
 
@@ -153,7 +147,7 @@ public class PlayerListWidget
                 }
             }
             this.client.textRenderer.draw(matrices, this.playername, (float)(x + 35), (float)(y + 2), 0xFFFFFF);
-            this.itemRenderer.renderGuiItemIcon(playerskull, (x + 275), (y - 1));
+            this.itemRenderer.renderGuiItemIcon(matrices,playerskull, (x + 275), (y - 1));
         }
 
         @Override

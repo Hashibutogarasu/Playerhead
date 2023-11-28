@@ -93,10 +93,10 @@ public class HeadsSelectionScreen extends Screen {
             super.render(matrices, mouseX, mouseY, delta);
 
             if(headSelection.get().player != null){
-                drawCenteredText(matrices, this.textRenderer, headSelection.get().player.getName(), this.width / 2, this.height / 2 - 31 - 20, -1);
+                drawCenteredTextWithShadow(matrices, this.textRenderer, headSelection.get().player.getName(), this.width / 2, this.height / 2 - 31 - 20, -1);
             }
 
-            drawCenteredText(matrices, this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 16777215);
+            drawCenteredTextWithShadow(matrices, this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 16777215);
             if (!this.mouseUsedForSelection) {
                 this.lastMouseX = mouseX;
                 this.lastMouseY = mouseY;
@@ -192,8 +192,8 @@ public class HeadsSelectionScreen extends Screen {
             return null;
         }
 
-        void renderIcon(ItemRenderer itemRenderer, int x, int y) {
-            itemRenderer.renderInGuiWithOverrides(this.icon, x, y);
+        void renderIcon(MatrixStack matrices,ItemRenderer itemRenderer, int x, int y) {
+            itemRenderer.renderInGuiWithOverrides(matrices,this.icon, x, y);
         }
 
         ServerPlayerEntity getPlayer() {
@@ -237,7 +237,7 @@ public class HeadsSelectionScreen extends Screen {
 
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             this.drawBackground(matrices);
-            this.headselection.renderIcon(HeadsSelectionScreen.this.itemRenderer, this.getX() + 5, this.getY() + 5);
+            this.headselection.renderIcon(matrices,HeadsSelectionScreen.this.itemRenderer, this.getX() + 5, this.getY() + 5);
             if (this.selected) {
                 this.drawSelectionBox(matrices);
             }
