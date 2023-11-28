@@ -49,7 +49,9 @@ public class HeadsSelectionScreen extends Screen {
 
     private @NotNull Optional<HeadSelection> getPreviousHeadSelection() {
         if (playerEntities != null) {
-            return HeadSelection.of(playerEntities.get(0).getUuid());
+            if(!playerEntities.isEmpty()){
+                return HeadSelection.of(playerEntities.get(0).getUuid());
+            }
         }
         return Optional.empty();
     }
