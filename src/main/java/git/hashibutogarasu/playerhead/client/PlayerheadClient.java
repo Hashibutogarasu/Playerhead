@@ -8,6 +8,7 @@ import git.hashibutogarasu.playerhead.screen.PlayerGiveScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
 
 public class PlayerheadClient implements ClientModInitializer {
     public static Logger clientlogger = LoggerFactory.getLogger("playerheadclient");
@@ -101,7 +103,10 @@ public class PlayerheadClient implements ClientModInitializer {
         Keybindings.register();
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (Keybindings.playergivescreen.wasPressed()) {
-                client.setScreen(new PlayerGiveScreen(MinecraftClient.getInstance().getSession().getProfile().getName()));
+                if (MinecraftClient.getInstance().world != null) {
+                    Optional<AbstractClientPlayerEntity> player = MinecraftClient.getInstance().world.getPlayers().stream().findFirst();
+                    player.ifPresent(abstractClientPlayerEntity -> client.setScreen(new PlayerGiveScreen(abstractClientPlayerEntity.getName().getString())));
+                }
             }
         });
     }

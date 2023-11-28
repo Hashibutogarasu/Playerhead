@@ -30,6 +30,8 @@ import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class HeadsSelectionScreen extends Screen {
+    static final Identifier SLOT_TEXTURE = new Identifier("gamemode_switcher/slot");
+    static final Identifier SELECTION_TEXTURE = new Identifier("gamemode_switcher/selection");
     static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
     private static final int UI_WIDTH = HeadSelection.VALUES.toArray().length * 31 - 5;
     private static final Text SELECT_NEXT_TEXT;
@@ -116,6 +118,9 @@ public class HeadsSelectionScreen extends Screen {
         }
     }
 
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+    }
+
     private void apply() {
         if (this.client != null) {
             apply(this.client, this.headSelection);
@@ -155,7 +160,7 @@ public class HeadsSelectionScreen extends Screen {
             this.headSelection = this.headSelection.get().next();
             return true;
         } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
+            return false;
         }
     }
 
@@ -239,14 +244,18 @@ public class HeadsSelectionScreen extends Screen {
             this.appendDefaultNarrations(builder);
         }
 
-        @Override
         public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
             this.drawBackground(context);
             if (HeadsSelectionScreen.this.client != null) {
                 this.headselection.renderIcon(context, this.getX() + 5, this.getY() + 5);
             }
+
             if (this.selected) {
+                context.drawGuiTexture(HeadsSelectionScreen.SELECTION_TEXTURE, this.getX(), this.getY(), 26, 26);
                 this.drawSelectionBox(context);
+            }
+            else{
+                context.drawGuiTexture(HeadsSelectionScreen.SLOT_TEXTURE, this.getX(), this.getY(), 26, 26);
             }
         }
 
@@ -273,6 +282,7 @@ public class HeadsSelectionScreen extends Screen {
             context.getMatrices().translate((float)this.getX(), (float)this.getY(), 0.0F);
             context.drawTexture(TEXTURE, 0, 0, 26.0F, 75.0F, 26, 26, 128, 128);
             context.getMatrices().pop();
+
         }
     }
 }

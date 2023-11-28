@@ -6,11 +6,13 @@ import git.hashibutogarasu.playerhead.keybindings.Keybindings;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.item.ItemStack;
@@ -24,6 +26,7 @@ import org.lwjgl.glfw.GLFW;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
 
 public class PlayerGiveScreen extends Screen {
     public TextFieldWidget searchBox;
@@ -96,14 +99,21 @@ public class PlayerGiveScreen extends Screen {
             }
         }).position(this.givebutton.getWidth() + this.givebutton.getX() + 5, this.givebutton.getY()).size(80,20).build();
 
-        this.delete_all_button = this.addDrawableChild(new TexturedButtonWidget(this.givebutton.getX() - 25, this.givebutton.getY(), 20, 20,0, 0, 20, new Identifier("playerhead:textures/icons/deleteall.png"), 20, 40, (button -> {
-            PlayerheadClient.config.favorited_players = new ArrayList<>();
-            if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
-                this.playerListWidget.clearPlayers();
-            }
-            PlayerheadClient.SaveConfig(PlayerheadClient.config, StandardOpenOption.TRUNCATE_EXISTING);
-            SystemToast.show(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.TUTORIAL_HINT, Text.translatable("playerhead.widget.delete_all_button.delete"), null);
-        })));
+        this.delete_all_button = this.addDrawableChild(new TexturedButtonWidget(
+                this.givebutton.getX() - 25,
+                this.givebutton.getY(), 20, 20,
+                new ButtonTextures(
+                        new Identifier("playerhead:textures/icons/deleteall_unfocused.png"),
+                        new Identifier("playerhead:textures/icons/deleteall_focuse.png")),
+                (button -> {
+                    PlayerheadClient.config.favorited_players = new ArrayList<>();
+                    if(PlayerheadClient.config.last_listtype == ListType.FAVORITED){
+                        this.playerListWidget.clearPlayers();
+                    }
+                    PlayerheadClient.SaveConfig(PlayerheadClient.config, StandardOpenOption.TRUNCATE_EXISTING);
+                    SystemToast.show(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.TUTORIAL_HINT, Text.translatable("playerhead.widget.delete_all_button.delete"), null);
+                })
+        ));
         this.setVisible();
         this.delete_all_button.setTooltip(Tooltip.of(Text.translatable("playerhead.widget.delete_all_button.tooltip")));
 
@@ -202,7 +212,6 @@ public class PlayerGiveScreen extends Screen {
 
         if(!this.searchBox.getText().isEmpty()) {
             context.drawItem(playerskull,this.searchBox.getX() + this.searchBox.getWidth() + 10, this.searchBox.getY());
-
         }
 
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
@@ -210,7 +219,11 @@ public class PlayerGiveScreen extends Screen {
 
     @Override
     public void close() {
-        this. before_search_text = MinecraftClient.getInstance().getSession().getProfile().getName();
+
+        if (MinecraftClient.getInstance().world != null) {
+            Optional<AbstractClientPlayerEntity> player = MinecraftClient.getInstance().world.getPlayers().stream().findFirst();
+            player.ifPresent(abstractClientPlayerEntity -> this.before_search_text = abstractClientPlayerEntity.getName().getString());
+        }
         PlayerheadClient.SaveConfig(PlayerheadClient.config,StandardOpenOption.TRUNCATE_EXISTING);
         super.close();
     }
@@ -218,7 +231,11 @@ public class PlayerGiveScreen extends Screen {
     private void updateSkull(){
         this.playerskull = new ItemStack(Items.PLAYER_HEAD);
         NbtCompound nbtCompound = new NbtCompound();
-        nbtCompound.putString("SkullOwner", this.searchBox != null ? this.searchBox.getText() : MinecraftClient.getInstance().getSession().getProfile().getName());
+        if (MinecraftClient.getInstance().world != null) {
+            Optional<AbstractClientPlayerEntity> player = MinecraftClient.getInstance().world.getPlayers().stream().findFirst();
+            player.ifPresent(abstractClientPlayerEntity -> nbtCompound.putString("SkullOwner", this.searchBox != null ? this.searchBox.getText() : abstractClientPlayerEntity.getName().getString()));
+        }
+        
         this.playerskull.setNbt(nbtCompound);
     }
 
