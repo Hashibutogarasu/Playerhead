@@ -5,15 +5,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -80,23 +79,24 @@ public class HeadsSelectionScreen extends Screen {
 
     }
 
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         if (!this.checkForClose() && this.headSelection.isPresent()) {
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-            matrices.push();
+            context.getMatrices().push();
             RenderSystem.enableBlend();
             RenderSystem.setShaderTexture(0, TEXTURE);
             int i = this.width / 2 - 62;
             int j = this.height / 2 - 31 - 27;
-            drawTexture(matrices, i, j, 0.0F, 0.0F, 125, 75, 128, 128);
-            matrices.pop();
-            super.render(matrices, mouseX, mouseY, delta);
+            context.drawTexture(TEXTURE, i, j, 0.0F, 0.0F, 125, 75, 128, 128);
+            context.getMatrices().pop();
+            super.render(context, mouseX, mouseY, delta);
 
             if(headSelection.get().player != null){
-                drawCenteredTextWithShadow(matrices, this.textRenderer, headSelection.get().player.getName(), this.width / 2, this.height / 2 - 31 - 20, -1);
+                context.drawCenteredTextWithShadow(this.textRenderer, headSelection.get().player.getName(), this.width / 2, this.height / 2 - 31 - 20, -1);
             }
 
-            drawCenteredTextWithShadow(matrices, this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 16777215);
+            context.drawCenteredTextWithShadow(this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 16777215);
             if (!this.mouseUsedForSelection) {
                 this.lastMouseX = mouseX;
                 this.lastMouseY = mouseY;
@@ -106,7 +106,7 @@ public class HeadsSelectionScreen extends Screen {
             boolean bl = this.lastMouseX == mouseX && this.lastMouseY == mouseY;
 
             for (ButtonWidget buttonWidget : this.gameModeButtons) {
-                buttonWidget.render(matrices, mouseX, mouseY, delta);
+                buttonWidget.render(context, mouseX, mouseY, delta);
                 this.headSelection.ifPresent((headSelection) -> buttonWidget.setSelected(headSelection == buttonWidget.headselection));
                 if (!bl && buttonWidget.isHovered()) {
                     this.headSelection = Optional.of(buttonWidget.headselection);
@@ -192,8 +192,8 @@ public class HeadsSelectionScreen extends Screen {
             return null;
         }
 
-        void renderIcon(MatrixStack matrices,ItemRenderer itemRenderer, int x, int y) {
-            itemRenderer.renderInGuiWithOverrides(matrices,this.icon, x, y);
+        void renderIcon(DrawContext context, int x, int y) {
+            context.drawItem(icon, x, y);
         }
 
         ServerPlayerEntity getPlayer() {
@@ -235,16 +235,19 @@ public class HeadsSelectionScreen extends Screen {
             this.headselection = headselection;
         }
 
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            this.drawBackground(matrices);
-            this.headselection.renderIcon(matrices,HeadsSelectionScreen.this.itemRenderer, this.getX() + 5, this.getY() + 5);
-            if (this.selected) {
-                this.drawSelectionBox(matrices);
-            }
-        }
-
         public void appendClickableNarrations(NarrationMessageBuilder builder) {
             this.appendDefaultNarrations(builder);
+        }
+
+        @Override
+        public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+            this.drawBackground(context);
+            if (HeadsSelectionScreen.this.client != null) {
+                this.headselection.renderIcon(context, this.getX() + 5, this.getY() + 5);
+            }
+            if (this.selected) {
+                this.drawSelectionBox(context);
+            }
         }
 
         public boolean isHovered() {
@@ -255,22 +258,21 @@ public class HeadsSelectionScreen extends Screen {
             this.selected = selected;
         }
 
-        private void drawBackground(MatrixStack matrices) {
+        private void drawBackground(DrawContext context) {
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, HeadsSelectionScreen.TEXTURE);
-            matrices.push();
-            matrices.translate((float)this.getX(), (float)this.getY(), 0.0F);
-            drawTexture(matrices, 0, 0, 0.0F, 75.0F, 26, 26, 128, 128);
-            matrices.pop();
+            context.getMatrices().push();
+            context.getMatrices().translate((float)this.getX(), (float)this.getY(), 0.0F);
+            context.drawTexture(TEXTURE, 0, 0, 0.0F, 75.0F, 26, 26, 128, 128);
+            context.getMatrices().pop();
         }
 
-        private void drawSelectionBox(MatrixStack matrices) {
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        private void drawSelectionBox(DrawContext context){
             RenderSystem.setShaderTexture(0, HeadsSelectionScreen.TEXTURE);
-            matrices.push();
-            matrices.translate((float)this.getX(), (float)this.getY(), 0.0F);
-            drawTexture(matrices, 0, 0, 26.0F, 75.0F, 26, 26, 128, 128);
-            matrices.pop();
+            context.getMatrices().push();
+            context.getMatrices().translate((float)this.getX(), (float)this.getY(), 0.0F);
+            context.drawTexture(TEXTURE, 0, 0, 26.0F, 75.0F, 26, 26, 128, 128);
+            context.getMatrices().pop();
         }
     }
 }

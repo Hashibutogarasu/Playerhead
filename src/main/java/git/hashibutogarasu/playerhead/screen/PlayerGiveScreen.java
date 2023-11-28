@@ -5,6 +5,7 @@ import git.hashibutogarasu.playerhead.client.PlayerheadClient;
 import git.hashibutogarasu.playerhead.keybindings.Keybindings;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -12,7 +13,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.Clipboard;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -184,25 +184,28 @@ public class PlayerGiveScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackgroundTexture(matrices);
-        this.playerListWidget.render(matrices, mouseX, mouseY, delta);
-        this.givebutton.render(matrices, mouseX, mouseY, delta);
-        this.changetypebutton.render(matrices, mouseX, mouseY, delta);
-        this.searchBox.render(matrices, mouseX, mouseY, delta);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+        renderBackgroundTexture(context);
+        this.playerListWidget.render(context, mouseX, mouseY, delta);
+        this.givebutton.render(context, mouseX, mouseY, delta);
+        this.changetypebutton.render(context, mouseX, mouseY, delta);
+        this.searchBox.render(context, mouseX, mouseY, delta);
 
         if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.FAVORITED) {
             this.delete_all_button.active = true;
             this.delete_all_button.visible = true;
-            this.delete_all_button.render(matrices, mouseX, mouseY, delta);
+            this.delete_all_button.render(context, mouseX, mouseY, delta);
         }
 
         if(!this.searchBox.getText().isEmpty()) {
-            this.itemRenderer.renderGuiItemIcon(matrices, playerskull,this.searchBox.getX() + this.searchBox.getWidth() + 10, this.searchBox.getY());
+            context.drawItem(playerskull,this.searchBox.getX() + this.searchBox.getWidth() + 10, this.searchBox.getY());
+
         }
 
-        drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
     }
 
     @Override

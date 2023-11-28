@@ -5,25 +5,25 @@ import git.hashibutogarasu.playerhead.client.PlayerheadClient;
 import git.hashibutogarasu.playerhead.keybindings.Keybindings;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 @Mixin(CreativeInventoryScreen.class)
 public class ScreenMixin {
     @Unique
     private ItemStack rendereditem;
-    @Inject(method = "renderTooltip", at = @At("RETURN"))
-    private void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y, CallbackInfo ci) {
+    @Inject(method = "getTooltipFromItem", at = @At("RETURN"))
+    private void renderTooltip(ItemStack stack, CallbackInfoReturnable<List<Text>> cir) {
         rendereditem = stack;
     }
 

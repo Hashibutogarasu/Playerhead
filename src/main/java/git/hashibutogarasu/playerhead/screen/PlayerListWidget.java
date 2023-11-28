@@ -6,16 +6,17 @@ import git.hashibutogarasu.playerhead.client.PlayerheadClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -104,13 +105,13 @@ public class PlayerListWidget
     public static class ScanningEntry extends Entry {
 
         @Override
-        public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-
+        public Text getNarration() {
+            return ScreenTexts.EMPTY;
         }
 
         @Override
-        public Text getNarration() {
-            return ScreenTexts.EMPTY;
+        public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+
         }
     }
 
@@ -125,10 +126,8 @@ public class PlayerListWidget
         public final String playername;
 
         private final ItemStack playerskull;
-        private final ItemRenderer itemRenderer;
 
         protected PlayerEntry(PlayerGiveScreen screen, String playername) {
-            this.itemRenderer = MinecraftClient.getInstance().getItemRenderer();
             this.screen = screen;
             this.playername = playername;
             this.client = MinecraftClient.getInstance();
@@ -137,17 +136,6 @@ public class PlayerListWidget
             NbtCompound nbtCompound = new NbtCompound();
             nbtCompound.putString("SkullOwner",playername);
             playerskull.setNbt(nbtCompound);
-        }
-
-        @Override
-        public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            if(hovered){
-                if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.FAVORITED) {
-                    this.screen.renderTooltip(matrices, Text.translatable("playerhead.tooltip.removefavorite", "delete"), mouseX, mouseY);
-                }
-            }
-            this.client.textRenderer.draw(matrices, this.playername, (float)(x + 35), (float)(y + 2), 0xFFFFFF);
-            this.itemRenderer.renderGuiItemIcon(matrices,playerskull, (x + 275), (y - 1));
         }
 
         @Override
@@ -171,6 +159,18 @@ public class PlayerListWidget
         @Override
         public Text getNarration() {
             return Text.translatable("narrator.select", this.playername);
+        }
+
+        @Override
+        public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            if(hovered){
+                if (PlayerheadClient.config != null && PlayerheadClient.config.last_listtype == ListType.FAVORITED) {
+                    this.screen.setTooltip(Tooltip.of(Text.translatable("playerhead.tooltip.removefavorite", "delete")).getLines(this.client));
+                    this.screen.renderWithTooltip(context,mouseX, mouseY, tickDelta);
+                }
+            }
+            context.drawCenteredTextWithShadow(this.client.textRenderer, this.playername, (x + 35), (y + 2), Colors.WHITE);
+            context.drawItem(playerskull, (x + 275), (y - 1));
         }
     }
 }
